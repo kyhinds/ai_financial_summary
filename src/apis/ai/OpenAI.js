@@ -1,5 +1,4 @@
 "use strict";
-// src/apis/ai/OpenAI.ts
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -9,24 +8,28 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OpenAIWrapper = void 0;
-const openai_1 = require("openai"); // Ensure this matches the actual export
+const openai_1 = __importDefault(require("openai")); // Import OpenAI directly
 class OpenAIWrapper {
     constructor(apiKey) {
-        //const configuration = new Configuration({ apiKey: apiKey });
-        this.openai = new openai_1.OpenAI();
+        this.openai = new openai_1.default({
+            apiKey: apiKey // Pass the API key directly in the constructor
+        });
     }
     decideAction(query) {
         return __awaiter(this, void 0, void 0, function* () {
-            const prompt = `Based on the input: "${query}", which action should be performed? Respond with one number only: 1 for earnings summary, 2 for revenue details, 0 for neither`;
+            const prompt = `Based on the input: "${query}", which action should be performed? Respond with one number only: 1 for earnings summary, 2 for revenue details, 0 for neither.`;
             try {
-                const response = yield this.openai.createCompletion({
-                    model: "text-davinci-003", // Updated to a more recent model
+                const response = yield this.openai.completions.create({
+                    model: "gpt-3.5-turbo",
                     prompt: prompt,
                     max_tokens: 10
                 });
-                return response.data.choices[0].text.trim();
+                return response.choices[0].text.trim();
             }
             catch (error) {
                 console.error('Error in deciding action:', error);
@@ -37,8 +40,8 @@ class OpenAIWrapper {
     summarizeText(text) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield this.openai.createCompletion({
-                    model: "text-davinci-002",
+                const response = yield this.openai.completions.create({
+                    model: "gpt-3.5-turbo",
                     prompt: `Summarize this text: ${text}`,
                     max_tokens: 150
                 });
@@ -53,8 +56,8 @@ class OpenAIWrapper {
     answerQuery(query) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const response = yield this.openai.createCompletion({
-                    model: "text-davinci-002",
+                const response = yield this.openai.completions.create({
+                    model: "gpt-3.5-turbo",
                     prompt: query,
                     max_tokens: 150
                 });
